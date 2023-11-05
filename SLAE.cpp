@@ -215,7 +215,7 @@ void SLAE::MethodOfConjugateGradientsWithDiagP()
 		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*A*z(k-1)
 			r[i] = r[i] - ak * tmp[i];
 
-		MatrixVectorMultiplication(r, tmp); // M^(-1)*rk
+		VectorConditionalityDiagP(r, tmp); // M^(-1)*rk
 		double Mr_rCur = VectorScalarProduction(tmp, r); //( M^(-1)*rk , rk )
 		bk = Mr_rCur / Mr_rPrev;
 

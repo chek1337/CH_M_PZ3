@@ -5,13 +5,13 @@ int main()
 {
     SLAE slae;
     FILE* paramf, * iaf, * jaf, * alf, * auf, * dif, * bf;
-    fopen_s(&paramf, "param8.txt", "r");
-    fopen_s(&iaf, "ia8.txt", "r");
-    fopen_s(&jaf, "ja8.txt", "r");
-    fopen_s(&alf, "al8.txt", "r");
-    fopen_s(&auf, "au8.txt", "r");
-    fopen_s(&dif, "di8.txt", "r");
-    fopen_s(&bf, "b8.txt", "r");
+    fopen_s(&paramf, "param12.txt", "r");
+    fopen_s(&iaf, "ia12.txt", "r");
+    fopen_s(&jaf, "ja12.txt", "r");
+    fopen_s(&alf, "al12.txt", "r");
+    fopen_s(&auf, "au12.txt", "r");
+    fopen_s(&dif, "di12.txt", "r");
+    fopen_s(&bf, "b12.txt", "r");
     FILE* out;
     fopen_s(&out, "out.txt", "w");
     
