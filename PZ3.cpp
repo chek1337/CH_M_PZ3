@@ -18,6 +18,6 @@ int main()
 
     slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
     slae.OutputDense();
-    slae.MethodOfConjugateGradients();
+    slae.MethodOfConjugateGradientsWithDiagP();
     slae.VectorOutputSolution(out);
 }

@@ -111,70 +111,131 @@ void SLAE::MatrixVectorMultiplication(double*vectorMult, double* vectorOut)
 	}
 }
 
-void SLAE::InitialApproximation()
+//**********************************************************************
+//void SLAE::MethodOfConjugateGradients()
+//{
+//	MatrixVectorMultiplication(x0, tmp);
+//	VecotorSubtract(b, tmp);
+//	VectorCopy(tmp, r);
+//	VectorCopy(r, z);
+//
+//	double normB = VectorNorm(b);
+//	double ak = 0, bk = 0;
+//	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+//	
+//	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
+//	{
+//		printf("Iteration: %d ", curIt + 1);
+//		
+//		double r_rPrev = VectorScalarProduction(r); // ( r(k-1) , r(k-1) )
+//		MatrixVectorMultiplication(z, tmp); // A*z(k-1)
+//		double Az_zPrev = VectorScalarProduction(tmp, z); //( A*z(k-1) , z(k-1) )
+//		ak = r_rPrev / Az_zPrev;
+//
+//		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
+//			x[i] = x[i] + ak * z[i];
+//
+//		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*A*z(k-1)
+//			r[i] = r[i] - ak * tmp[i];
+//
+//		double r_rCur = VectorScalarProduction(r); // ( rk , rk )
+//		bk = r_rCur / r_rPrev;
+//
+//		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
+//			z[i] = r[i] + bk * z[i];
+//		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+//		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
+//	}
+//}
+
+void SLAE::MethodOfConjugateGradients()
 {
 	MatrixVectorMultiplication(x0, tmp);
 	VecotorSubtract(b, tmp);
 	VectorCopy(tmp, r);
 	VectorCopy(r, z);
-}
 
-void SLAE::Calculate_ak()
-{
-	MatrixVectorMultiplication(z, tmp);
-	ak = VectorScalarProduction(r) / VectorScalarProduction(tmp, z);
-}
+	double normB = VectorNorm(b);
+	double ak = 0, bk = 0;
+	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
 
-double SLAE::CalculateRelativeDiscrepancy()
-{
-	return VectorNorm(r)/VectorNorm(b);
-}
-
-void SLAE::Calculate_xk()
-{
-	for (int i = 0; i < n; i++)
-	{
-		x[i] = x[i] + ak * z[i];
-	}
-}
-
-void SLAE::Calculate_rk()
-{
-	MatrixVectorMultiplication(z, tmp); //Ну вообще в tmp и так лежит уже A*z
-	for (int i = 0; i < n; i++)
-	{
-		r[i] = r[i] - ak * tmp[i];;
-	}
-}
-
-void SLAE::Calculate_zk()
-{
-	for (int i = 0; i < n; i++)
-	{
-		z[i] = r[i] + bk * z[i];;
-	}
-}
-
-void SLAE::MethodOfConjugateGradients()
-{
-	InitialApproximation();
-	double RelDiscrepancy = CalculateRelativeDiscrepancy();
-	double rk_rkPrev = 0;
-	double rk_rkCur = 0;
 	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
 	{
 		printf("Iteration: %d ", curIt + 1);
-		Calculate_ak();
-		Calculate_xk();
-		rk_rkPrev = VectorScalarProduction(r);
-		Calculate_rk();
-		rk_rkCur = VectorScalarProduction(r);
-		bk = rk_rkCur / rk_rkPrev;
-		Calculate_zk();
-		RelDiscrepancy = CalculateRelativeDiscrepancy();
+
+		double r_rPrev = VectorScalarProduction(r); // ( r(k-1) , r(k-1) )
+		MatrixVectorMultiplication(z, tmp); // A*z(k-1)
+		double Az_zPrev = VectorScalarProduction(tmp, z); //( A*z(k-1) , z(k-1) )
+		ak = r_rPrev / Az_zPrev;
+
+		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
+			x[i] = x[i] + ak * z[i];
+
+		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*A*z(k-1)
+			r[i] = r[i] - ak * tmp[i];
+
+		double r_rCur = VectorScalarProduction(r); // ( rk , rk )
+		bk = r_rCur / r_rPrev;
+
+		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
+			z[i] = r[i] + bk * z[i];
+		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
 		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
 	}
 }
+
+double SLAE::CalculateRelativeDiscrepancy(double norm)
+{
+	return VectorNorm(r) / norm;
+}
+
+//**********************************************************************
+void SLAE::MethodOfConjugateGradientsWithDiagP()
+{
+	MatrixVectorMultiplication(x0, tmp);
+	VecotorSubtract(b, tmp);
+	VectorCopy(tmp, r);
+	VectorConditionalityDiagP(r, z);
+
+	double normB = VectorNorm(b);
+	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+	double ak=0, bk=0;
+	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
+	{
+		printf("Iteration: %d ", curIt + 1);
+		VectorConditionalityDiagP(r, tmp); //M^(-1)*r(k-1)
+		double Mr_rPrev = VectorScalarProduction(tmp, r); //( M^(-1)*r(k-1) , r(k-1) )
+		MatrixVectorMultiplication(z, tmp); //A*z(k-1)
+		double Az_zPrev = VectorScalarProduction(tmp, z); // ( A*z(k-1) , z(k-1) )
+		ak = Mr_rPrev / Az_zPrev;
+
+		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
+			x[i] = x[i] + ak * z[i];
+		
+		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*A*z(k-1)
+			r[i] = r[i] - ak * tmp[i];
+
+		MatrixVectorMultiplication(r, tmp); // M^(-1)*rk
+		double Mr_rCur = VectorScalarProduction(tmp, r); //( M^(-1)*rk , rk )
+		bk = Mr_rCur / Mr_rPrev;
+
+		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
+			z[i] = tmp[i] + bk * z[i];
+		
+		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
+	}
+}
+
+void SLAE::VectorConditionalityDiagP(double *vectorIn, double *vectorOut)
+{
+	for (int i = 0; i < n; i++)
+	{
+		vectorOut[i] = vectorIn[i]/ sqrt(di[i]);
+	}
+}
+
+//**********************************************************************
 
 void SLAE::VecotorSubtract(double* first, double* second)
 {

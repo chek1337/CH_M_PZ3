@@ -8,7 +8,7 @@
 class SLAE {
 public:
 	int n, maxiter;
-	double eps, ak, bk;
+	double eps;
 	double* al, * au, * di;
 	double *x,*x0, * b, *r, *z, *tmp;
 	int* ia, *ja, nProfile;
@@ -17,15 +17,13 @@ public:
 
 	void MatrixVectorMultiplication(double* vectorMult, double* vectorOut);
 	void TransposedMatrixVectorMultiplication(double* vectorMult, double* vectorOut);
-	void MethodOfConjugateGradients();
-	void InitialApproximation();
-	double CalculateRelativeDiscrepancy();
+	double CalculateRelativeDiscrepancy(double norm);
 
-	
-	void Calculate_ak();
-	void Calculate_xk();
-	void Calculate_rk();
-	void Calculate_zk();
+	void MethodOfConjugateGradients();
+
+	void MethodOfConjugateGradientsWithDiagP();
+	void VectorConditionalityDiagP(double* vectorIn, double* vectorOut);
+
 
 	void VecotorSubtract(double* first, double* second);
 	double VectorScalarProduction(double* vector);
