@@ -18,6 +18,13 @@ int main()
 
     slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
     slae.OutputDense();
-    slae.MethodOfConjugateGradientsWithDiagP();
+    //double* temp;
+    //temp = new double[slae.n];
+    //for (int i = 0; i < slae.n; i++)
+    //{
+    //    temp[i] = i + 1;
+    //}
+    //slae.TransposedMatrixVectorMultiplication(temp, slae.x);
+    slae.MethodOfConjugateGradientsForNonSymMatrix();
     slae.VectorOutputSolution(out);
 }
