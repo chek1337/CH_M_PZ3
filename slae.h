@@ -11,7 +11,7 @@ public:
 	double eps;
 	double* al, * au, * di;
 	double* x, * x0, * b;
-	double *r, *z, *tmp1, *tmp2;
+	double *r, *z, *tmp1;
 	int* ia, *ja, nProfile;
 
 	void Input(FILE* paramf, FILE* iaf, FILE* jaf, FILE* alf, FILE* auf, FILE* dif, FILE* bf);
@@ -26,6 +26,8 @@ public:
 	void MethodOfConjugateGradientsForSymMatrixWithDiagP();
 	void MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
 	void VectorConditionalityDiagP(double* vectorIn, double* vectorOut);
+
+	void CalculateLU();
 
 	void SolveForward(double* lowerTringMat, double* rightVector, double* vectorX);
 	void SolveBackward(double* upperTringMat, double* rightVector, double* vectorX);

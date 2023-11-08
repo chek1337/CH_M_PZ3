@@ -25,7 +25,7 @@ int main()
     //    temp[i] = i + 1;
     //}
     //slae.TransposedMatrixVectorMultiplication(temp, slae.x);
-    slae.MethodOfConjugateGradientsForNonSymMatrix();
-//    slae.MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
+    //slae.MethodOfConjugateGradientsForNonSymMatrix();
+    slae.MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
     slae.VectorOutputSolution(out);
 }
