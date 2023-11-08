@@ -23,7 +23,8 @@ public:
 	void MethodOfConjugateGradientsForSymMatrix();
 	void MethodOfConjugateGradientsForNonSymMatrix();
 
-	void MethodOfConjugateGradientsWithDiagP();
+	void MethodOfConjugateGradientsForSymMatrixWithDiagP();
+	void MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
 	void VectorConditionalityDiagP(double* vectorIn, double* vectorOut);
 
 	void SolveForward(double* lowerTringMat, double* rightVector, double* vectorX);
