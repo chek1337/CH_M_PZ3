@@ -10,6 +10,7 @@ public:
 	int n, maxiter;
 	double eps;
 	double* al, * au, * di;
+	double* alLU, * auLU, * diLU;
 	double* x, * x0, * b;
 	double *r, *z, *tmp1;
 	int* ia, *ja, nProfile;
@@ -42,6 +43,7 @@ public:
 	void VectorZeroing(double* vector);
 
 	void OutputDense();
+	void OutputLUDense();
 
 	//void GenerateHilbertMatrix();
 

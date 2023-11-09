@@ -5,12 +5,12 @@ int main()
 {
     SLAE slae;
     FILE* paramf, * iaf, * jaf, * alf, * auf, * dif, * bf;
-    fopen_s(&paramf, "param12.txt", "r");
-    fopen_s(&iaf, "ia12.txt", "r");
-    fopen_s(&jaf, "ja12.txt", "r");
-    fopen_s(&alf, "al12.txt", "r");
-    fopen_s(&auf, "au12.txt", "r");
-    fopen_s(&dif, "di12.txt", "r");
+    fopen_s(&paramf, "paramLU.txt", "r");
+    fopen_s(&iaf, "iaLU.txt", "r");
+    fopen_s(&jaf, "jaLU.txt", "r");
+    fopen_s(&alf, "alLU.txt", "r");
+    fopen_s(&auf, "auLU.txt", "r");
+    fopen_s(&dif, "diLU.txt", "r");
     fopen_s(&bf, "b12.txt", "r");
     FILE* out;
     fopen_s(&out, "out.txt", "w");
@@ -18,6 +18,10 @@ int main()
 
     slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
     slae.OutputDense();
+    slae.CalculateLU();
+    slae.OutputDense();
+  
+
     //double* temp;
     //temp = new double[slae.n];
     //for (int i = 0; i < slae.n; i++)
@@ -26,6 +30,6 @@ int main()
     //}
     //slae.TransposedMatrixVectorMultiplication(temp, slae.x);
     //slae.MethodOfConjugateGradientsForNonSymMatrix();
-    slae.MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
-    slae.VectorOutputSolution(out);
+   // slae.MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
+    //slae.VectorOutputSolution(out);
 }

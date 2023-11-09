@@ -94,8 +94,70 @@ void SLAE::OutputDense()
 		}
 		printf("\n");
 	}
-
+	printf("\n");
 }
+
+void SLAE::OutputLUDense()
+{
+	int flagfound = 0;
+	for (int i = 0; i < n; i++)
+	{
+		int k = ia[i + 1] - ia[i];
+		if (k == 0)
+		{
+			for (int j = 0; j < i; j++)
+			{
+				printf(REALOUTD, 0.0);
+			}
+		}
+		else
+		{
+			int lastj = 0;
+			for (int j = ia[i]; j < ia[i + 1]; j++) //Вот это 100 проц правильно.
+			{
+				for (int p = lastj; p < ja[j]; p++) //Вот это 100 проц правильно.
+				{
+					printf(REALOUTD, 0.0);
+				}
+				printf(REALOUTD, alLU[j]);
+				lastj = ja[j] + 1;
+			}
+			for (int j = lastj; j < i; j++) //??
+			{
+				printf(REALOUTD, 0.0);
+			}
+		}
+
+		printf(REALOUTD, diLU[i]);
+
+		for (int j = i + 1; j < n; j++)
+		{
+			k = ia[j + 1] - ia[j];
+			if (k == 0) {
+				printf(REALOUTD, 0.0);
+			}
+			else
+			{
+				flagfound = 0;
+				for (k = ia[j]; k < ia[j + 1]; k++)
+				{
+
+					if (ja[k] == i)
+					{
+						printf(REALOUTD, auLU[k]);
+						flagfound = 1;
+						break;
+					}
+				}
+				if (flagfound == 0)
+					printf(REALOUTD, 0.0);
+			}
+		}
+		printf("\n");
+	}
+	printf("\n");
+}
+
 
 void SLAE::MatrixVectorMultiplication(double* vectorMult, double* vectorOut)
 {
@@ -297,35 +359,38 @@ void SLAE::MethodOfConjugateGradientsForNonSymMatrixWithDiagP()
 
 void SLAE::CalculateLU()
 {
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < n; i++) //i = 7
 	{
-		int i0 = ia[i];
-		int i1 = ia[i + 1];
+		int i0 = ia[i]; //15
+		int i1 = ia[i + 1]; //19
 		double sumD = 0;
-		int j = i - (i1 - i0);
-		for (int k = i0; k < i1; j++, k++)
+
+		for (int k = i0; k < i1; k++)
 		{
 			double sumL = 0, sumU = 0;
+			int j = ja[k];
 
-			int j0 = ia[j], j1 = ia[j + 1];
+			int j0 = ia[j]; 
+			int j1 = ia[j+1]; 
 
-			int difI = i1 - i0 - (i - j);
-			int difJ = j1 - j0;
+			int ik = i0;
+			int kj = ia[j];
+
+			int difI = k - i0; //4
+			int difJ = j1 - j0; //3
 			int difIJ = difI - difJ;
-
-			int ki = i0, kj = j0;
-
 			if (difIJ < 0)
-				kj -= difIJ;
-			else
-				ki += difIJ;
+				kj += abs(difIJ);
+			else if(difIJ != 0)
+				ik += difIJ;
 
-			for (; ki < k; ki++, kj++)
+			for ( ; ja[ik] < ja[k]; ik++, kj++)
 			{
-				sumL += al[ki] * au[kj];
-				sumU += al[kj] * au[ki];
+				if (ja[ik] == ja[kj]) {
+					sumL += al[ik] * au[kj];
+					sumU += al[kj] * au[ik];
+				}		
 			}
-
 			al[k] = al[k] - sumL;
 			au[k] = (au[k] - sumU) / di[j];
 			sumD += al[k] * au[k];
@@ -333,6 +398,41 @@ void SLAE::CalculateLU()
 		di[i] -= sumD;
 	}
 }
+
+
+//void SLAE::CalculateLU()
+//{
+//	for (size_t i = 0; i < n; i++)
+//	{
+//		double sumD = 0;
+//		for (size_t j = ia[i]; j < ia[i + 1]; j++)
+//		{
+//			size_t k = ia[i];
+//			size_t v = ia[ja[j]];
+//			al[j] = au[j] = 0;
+//			double sumL = 0;
+//			double sumU = 0;
+//			while (k < j && v < ia[ja[j] + 1])
+//			{
+//				if (ja[k] > ja[v]) v++;
+//				else if (ja[k] < ja[v]) k++;
+//				else
+//				{
+//					sumL += al[k] * au[v];
+//					sumU += al[v] * au[k];
+//					k++;
+//					v++;
+//				}
+//			}
+//			al[j] = (al[j] - sumL);
+//			au[j] = (au[j] - sumU) / di[ja[j]];
+//
+//			sumD += al[j] * au[j];
+//		}
+//		di[i] = sqrt(di[i] - sumD);
+//	}
+//}
+
 
 //**********************************************************************
 
@@ -481,6 +581,10 @@ void SLAE::AllocateMemory()
 	r = new double[n]();
 	z = new double[n]();
 	tmp1 = new double[n]();
+
+	alLU = new double[nProfile]();
+	auLU = new double[nProfile]();
+	diLU = new double[n]();
 }
 
 void SLAE::ClearMemory()
