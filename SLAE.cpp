@@ -272,10 +272,10 @@ void SLAE::MethodOfConjugateGradientsForNonSymMatrix()
 
 	MatrixVectorMultiplication(x0, tmp1);
 	VectorSubtract(b, tmp1, tmp1);
-	SolveForward(al, tmp1, tmp1); //+
-	SolveBackward(al, tmp1, tmp1); //+
-	TransposedMatrixVectorMultiplication(tmp1, x0); //+
-	SolveForward(au, x0, tmp1); //+
+	SolveForward(al, tmp1, tmp1);
+	SolveBackward(al, tmp1, tmp1);
+	TransposedMatrixVectorMultiplication(tmp1, x0);
+	SolveForward(au, x0, tmp1);
 	VectorCopy(tmp1, r);
 	VectorCopy(r, z);
 	double r_rPrev, r_rCur, Newz_zPrev, ak, bk;
@@ -355,18 +355,76 @@ void SLAE::MethodOfConjugateGradientsForNonSymMatrixWithDiagP()
 	SolveBackward(au, x, x);
 }
 
+void SLAE::MethodOfConjugateGradientsForNonSymMatrixWithLuP()
+{
+	MatrixUVectorMultiplication(x0, x);
+
+	MatrixVectorMultiplication(x0, tmp1);
+	VectorSubtract(b, tmp1, tmp1);
+	SolveForward(al, tmp1, tmp1);
+	SolveBackward(al, tmp1, tmp1);
+	TransposedMatrixVectorMultiplication(tmp1, x0);
+	SolveForward(au, x0, tmp1);
+	VectorCopy(tmp1, r);
+
+	// M = LU
+	// M^(-1) = U^(-1)*L^(-1)
+	SolveForward(alLU, r, tmp1);
+	SolveBackward(auLU, tmp1, tmp1);
+	VectorCopy(tmp1, z);
+	
+	double Mr_rPrev, Mr_rCur, Newz_zPrev, ak, bk;
+	double normB = VectorNorm(b);
+	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+
+	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
+	{
+		printf("Iteration: %d ", curIt + 1);
+		// M = LU
+		// M^(-1) = U^(-1)*L^(-1)
+		SolveForward(alLU, r, tmp1);
+		SolveBackward(auLU, tmp1, tmp1);
+		Mr_rPrev = VectorScalarProduction(tmp1, r); // ( r(k-1) , r(k-1) )
+		VectorCopy(z, tmp1); //ѕока так, так как CalculateZ не очень удачно написан
+		CalculateZ(tmp1); //U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)       //ѕочему-то мен€етс€ z, после этого метода
+		Newz_zPrev = VectorScalarProduction(tmp1, z); //( A*z(k-1) , z(k-1) )
+		ak = Mr_rPrev / Newz_zPrev;
+
+		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
+			x[i] = x[i] + ak * z[i];
+
+		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
+			r[i] = r[i] - ak * tmp1[i];
+
+		SolveForward(alLU, r, tmp1);
+		SolveBackward(auLU, tmp1, tmp1);
+		Mr_rCur = VectorScalarProduction(tmp1, r); // ( rk , rk )
+		bk = Mr_rCur / Mr_rPrev;
+
+		for (int i = 0; i < n; i++) // zk =  rk + bk*z(k-1)
+			z[i] = tmp1[i] + bk * z[i];
+		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
+	}
+	SolveBackward(au, x, x);
+}
+
 //**********************************************************************
 
 void SLAE::CalculateLU()
 {
 	for (int i = 0; i < n; i++) //i = 7
 	{
+		diLU[i] = di[i];
 		int i0 = ia[i]; //15
 		int i1 = ia[i + 1]; //19
 		double sumD = 0;
 
 		for (int k = i0; k < i1; k++)
 		{
+			alLU[k] = al[k];
+			auLU[k] = au[k];
+
 			double sumL = 0, sumU = 0;
 			int j = ja[k];
 
@@ -387,52 +445,17 @@ void SLAE::CalculateLU()
 			for ( ; ja[ik] < ja[k]; ik++, kj++)
 			{
 				if (ja[ik] == ja[kj]) {
-					sumL += al[ik] * au[kj];
-					sumU += al[kj] * au[ik];
+					sumL += alLU[ik] * auLU[kj];
+					sumU += alLU[kj] * auLU[ik];
 				}		
 			}
-			al[k] = al[k] - sumL;
-			au[k] = (au[k] - sumU) / di[j];
-			sumD += al[k] * au[k];
+			alLU[k] = alLU[k] - sumL;
+			auLU[k] = (auLU[k] - sumU) / diLU[j];
+			sumD += alLU[k] * auLU[k];
 		}
-		di[i] -= sumD;
+		diLU[i] -= sumD;
 	}
 }
-
-
-//void SLAE::CalculateLU()
-//{
-//	for (size_t i = 0; i < n; i++)
-//	{
-//		double sumD = 0;
-//		for (size_t j = ia[i]; j < ia[i + 1]; j++)
-//		{
-//			size_t k = ia[i];
-//			size_t v = ia[ja[j]];
-//			al[j] = au[j] = 0;
-//			double sumL = 0;
-//			double sumU = 0;
-//			while (k < j && v < ia[ja[j] + 1])
-//			{
-//				if (ja[k] > ja[v]) v++;
-//				else if (ja[k] < ja[v]) k++;
-//				else
-//				{
-//					sumL += al[k] * au[v];
-//					sumU += al[v] * au[k];
-//					k++;
-//					v++;
-//				}
-//			}
-//			al[j] = (al[j] - sumL);
-//			au[j] = (au[j] - sumU) / di[ja[j]];
-//
-//			sumD += al[j] * au[j];
-//		}
-//		di[i] = sqrt(di[i] - sumD);
-//	}
-//}
-
 
 //**********************************************************************
 

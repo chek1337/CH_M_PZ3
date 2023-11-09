@@ -26,6 +26,7 @@ public:
 
 	void MethodOfConjugateGradientsForSymMatrixWithDiagP();
 	void MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
+	void MethodOfConjugateGradientsForNonSymMatrixWithLuP();
 	void VectorConditionalityDiagP(double* vectorIn, double* vectorOut);
 
 	void CalculateLU();
