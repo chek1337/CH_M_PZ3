@@ -3,33 +3,54 @@
 #include <cstdio>
 #include <math.h>
 
-#define REALOUTD "%.0f\t"
+#define REALOUTD "%.7f\t"
 
 class SLAE {
 public:
-	int n, maxiter;
-	double eps;
+	int n, maxiter = 10000, nProfile = 0;
+	double  eps = 1e-13;
 	double* al, * au, * di;
-	double* x, * x0, * b;
-	double *r, *z, *tmp1, *tmp2;
-	int* ia, *ja, nProfile;
+	double* alLU, * auLU, * diLU;
+	double* x, * x0, * b, * xtrue;
+	double* r, * z, * tmp1;
+	int* ia, * ja;
 
 	void Input(FILE* paramf, FILE* iaf, FILE* jaf, FILE* alf, FILE* auf, FILE* dif, FILE* bf);
 
 	void MatrixVectorMultiplication(double* vectorMult, double* vectorOut);
 	void TransposedMatrixVectorMultiplication(double* vectorMult, double* vectorOut);
+	double CalculateRelativeDiscrepancyWithR(double norm);
 	double CalculateRelativeDiscrepancy(double norm);
 
 	void MethodOfConjugateGradientsForSymMatrix();
-	void MethodOfConjugateGradientsForNonSymMatrix();
+	void MethodOfConjugateGradientsForNonSymMatrixAtA();
+	//void MethodOfConjugateGradientsForNonSymMatrix();
 
 	void MethodOfConjugateGradientsForSymMatrixWithDiagP();
-	void MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
-	void VectorConditionalityDiagP(double* vectorIn, double* vectorOut);
+	//void MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
+	void MethodOfConjugateGradientsForNonSymMatrixAtAWithDiagP();
 
-	void SolveForward(double* lowerTringMat, double* rightVector, double* vectorX);
-	void SolveBackward(double* upperTringMat, double* rightVector, double* vectorX);
-	void MatrixUVectorMultiplication(double* vectorMult, double* vectorOut);
+	void MethodOfConjugateGradientsForSymMatrixWithLuP();
+	//void MethodOfConjugateGradientsForNonSymMatrixWithLuP();
+	void MethodOfConjugateGradientsForNonSymMatrixAtAWithLuP();
+
+	void VectorConditionalityForSymMatrixDiagP(double* vectorIn, double* vectorOut);
+	void VectorConditionalityForNonSymMatrixDiagP(double* vectorIn, double* vectorOut);
+
+	void CalculateLU();
+
+	void GenerateHilbertMatrix(int size);
+
+	void SolveForward(double* lowerTringMat, double* diag, double* rightVector, double* vectorX);
+	void SolveBackward(double* upperTringMat, double* diag, double* rightVector, double* vectorX);
+
+
+	void SolveForwardLU(double* lowerTringMat, double* rightVector, double* vectorX);
+	void SolveBackwardLU(double* upperTringMat, double* rightVector, double* vectorX);
+	void SolveForwardLU(double* lowerTringMat, double* diag, double* rightVector, double* vectorX);
+	void SolveBackwardLU(double* upperTringMat, double* diag, double* rightVector, double* vectorX);
+
+	void MatrixUVectorMultiplicationLU(double* U, double* vectorMult, double* vectorOut);
 	void CalculateZ(double* vectorOut);
 
 	void VectorSubtract(double* first, double* second, double* result);
@@ -40,8 +61,8 @@ public:
 	void VectorZeroing(double* vector);
 
 	void OutputDense();
+	void OutputLUDense();
 
-	//void GenerateHilbertMatrix();
 
 	void VectorOutputSolution(FILE* out);
 
