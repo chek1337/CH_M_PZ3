@@ -53,12 +53,12 @@ public:
 	void MatrixUVectorMultiplicationLU(double* U, double* vectorMult, double* vectorOut);
 	void CalculateZ(double* vectorOut);
 
+	void CalculateFsubAx(double* vectorMult, double* vectorOut);
 	void VectorSubtract(double* first, double* second, double* result);
 	double VectorScalarProduction(double* vector);
 	double VectorScalarProduction(double* vector1, double* vector2);
 	double VectorNorm(double* vector);
 	void VectorCopy(double* first, double* second);
-	void VectorZeroing(double* vector);
 
 	void OutputDense();
 	void OutputLUDense();
