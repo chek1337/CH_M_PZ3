@@ -1,7 +1,6 @@
 #include "slae.h"
 
-
-void SLAE::Input(FILE *paramf, FILE* iaf, FILE* jaf, FILE* alf, FILE* auf, FILE*dif, FILE *bf) {
+void SLAE::Input(FILE* paramf, FILE* iaf, FILE* jaf, FILE* alf, FILE* auf, FILE* dif, FILE* bf) {
 	fscanf_s(paramf, "%d", &n);
 	fscanf_s(paramf, "%d", &maxiter);
 	fscanf_s(paramf, "%lf", &eps);
@@ -34,13 +33,17 @@ void SLAE::Input(FILE *paramf, FILE* iaf, FILE* jaf, FILE* alf, FILE* auf, FILE*
 
 	//for (int i = 0; i < n; i++)
 	//	x0[i] = 0;
+	for (int i = 0; i < n; i++)
+	{
+		xtrue[i] = i + 1;
+	}
 }
 
 void SLAE::OutputDense()
 {
 	int flagfound = 0;
 	for (int i = 0; i < n; i++)
-	{	
+	{
 		int k = ia[i + 1] - ia[i];
 		if (k == 0)
 		{
@@ -52,16 +55,16 @@ void SLAE::OutputDense()
 		else
 		{
 			int lastj = 0;
-			for (int j = ia[i]; j < ia[i + 1]; j++) //Вот это 100 проц правильно.
+			for (int j = ia[i]; j < ia[i + 1]; j++) //пїЅпїЅпїЅ пїЅпїЅпїЅ 100 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 			{
-				for (int p = lastj; p < ja[j]; p++) //Вот это 100 проц правильно.
+				for (int p = lastj; p < ja[j]; p++) //пїЅпїЅпїЅ пїЅпїЅпїЅ 100 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 				{
 					printf(REALOUTD, 0.0);
 				}
 				printf(REALOUTD, al[j]);
 				lastj = ja[j] + 1;
 			}
-			for (int j = lastj; j < i ; j++) //??
+			for (int j = lastj; j < i; j++) //??
 			{
 				printf(REALOUTD, 0.0);
 			}
@@ -85,10 +88,10 @@ void SLAE::OutputDense()
 					{
 						printf(REALOUTD, au[k]);
 						flagfound = 1;
-						break;				
+						break;
 					}
 				}
-				if(flagfound == 0)
+				if (flagfound == 0)
 					printf(REALOUTD, 0.0);
 			}
 		}
@@ -113,9 +116,9 @@ void SLAE::OutputLUDense()
 		else
 		{
 			int lastj = 0;
-			for (int j = ia[i]; j < ia[i + 1]; j++) //Вот это 100 проц правильно.
+			for (int j = ia[i]; j < ia[i + 1]; j++) //пїЅпїЅпїЅ пїЅпїЅпїЅ 100 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 			{
-				for (int p = lastj; p < ja[j]; p++) //Вот это 100 проц правильно.
+				for (int p = lastj; p < ja[j]; p++) //пїЅпїЅпїЅ пїЅпїЅпїЅ 100 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 				{
 					printf(REALOUTD, 0.0);
 				}
@@ -158,7 +161,6 @@ void SLAE::OutputLUDense()
 	printf("\n");
 }
 
-
 void SLAE::MatrixVectorMultiplication(double* vectorMult, double* vectorOut)
 {
 	VectorZeroing(vectorOut);
@@ -189,7 +191,7 @@ void SLAE::TransposedMatrixVectorMultiplication(double* vectorMult, double* vect
 	}
 }
 
-//*********************** Симметричная матрица ***********************************************
+//*********************** пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ***********************************************
 
 void SLAE::MethodOfConjugateGradientsForSymMatrix()
 {
@@ -200,7 +202,7 @@ void SLAE::MethodOfConjugateGradientsForSymMatrix()
 
 	double normB = VectorNorm(b);
 	double ak = 0, bk = 0;
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+	double RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 
 	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
 	{
@@ -222,7 +224,7 @@ void SLAE::MethodOfConjugateGradientsForSymMatrix()
 
 		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
 			z[i] = r[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+		RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
 	}
 }
@@ -232,19 +234,18 @@ void SLAE::MethodOfConjugateGradientsForSymMatrixWithDiagP()
 	MatrixVectorMultiplication(x0, tmp1);
 	VectorSubtract(b, tmp1, tmp1);
 	VectorCopy(tmp1, r);
-	VectorConditionalityForSymMatrixDiagP(r, z);
+	VectorCopy(tmp1, z);
 
 	double normB = VectorNorm(b);
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+	double RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 	double ak = 0, bk = 0;
 	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
 	{
 		printf("Iteration: %d ", curIt + 1);
-		VectorConditionalityForSymMatrixDiagP(r, tmp1); //M^(-1)*r(k-1)
-		double Mr_rPrev = VectorScalarProduction(tmp1, r); //( M^(-1)*r(k-1) , r(k-1) )
+		double r_rPrev = VectorScalarProduction(r); //( M^(-1)*r(k-1) , r(k-1) )
 		MatrixVectorMultiplication(z, tmp1); //A*z(k-1)
 		double Az_zPrev = VectorScalarProduction(tmp1, z); // ( A*z(k-1) , z(k-1) )
-		ak = Mr_rPrev / Az_zPrev;
+		ak = r_rPrev / Az_zPrev;
 
 		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
 			x[i] = x[i] + ak * z[i];
@@ -252,14 +253,13 @@ void SLAE::MethodOfConjugateGradientsForSymMatrixWithDiagP()
 		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*A*z(k-1)
 			r[i] = r[i] - ak * tmp1[i];
 
-		VectorConditionalityForSymMatrixDiagP(r, tmp1); // M^(-1)*rk
-		double Mr_rCur = VectorScalarProduction(tmp1, r); //( M^(-1)*rk , rk )
-		bk = Mr_rCur / Mr_rPrev;
+		double r_rCur = VectorScalarProduction(tmp1, r); //( rk , rk )
+		bk = r_rCur / r_rPrev;
 
 		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
 			z[i] = tmp1[i] + bk * z[i];
 
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+		RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
 	}
 }
@@ -276,7 +276,7 @@ void SLAE::MethodOfConjugateGradientsForSymMatrixWithLuP()
 
 	double normB = VectorNorm(b);
 	double ak = 0, bk = 0;
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+	double RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 
 	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
 	{
@@ -303,168 +303,23 @@ void SLAE::MethodOfConjugateGradientsForSymMatrixWithLuP()
 
 		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
 			z[i] = tmp1[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+		RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
 	}
 }
 
-//*********************** Несимметричная матрица с честным приведение к симметричной матрице *********************************
-
-void SLAE::MethodOfConjugateGradientsForNonSymMatrix()
-{
-	MatrixUVectorMultiplication(x0, x);
-
-	MatrixVectorMultiplication(x0, tmp1);
-	VectorSubtract(b, tmp1, tmp1);
-	SolveForward(al, tmp1, tmp1);
-	SolveBackward(al, tmp1, tmp1);
-	TransposedMatrixVectorMultiplication(tmp1, x0);
-	SolveForward(au, x0, tmp1);
-	VectorCopy(tmp1, r);
-	VectorCopy(r, z);
-	double r_rPrev, r_rCur, Newz_zPrev, ak, bk;
-	double normB = VectorNorm(b);
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-
-	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
-	{
-		printf("Iteration: %d ", curIt + 1);
-
-		r_rPrev = VectorScalarProduction(r); // ( r(k-1) , r(k-1) )
-		VectorCopy(z, tmp1); //Пока так, так как CalculateZ не очень удачно написан
-		CalculateZ(tmp1); //U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
-		Newz_zPrev = VectorScalarProduction(tmp1, z); //( A*z(k-1) , z(k-1) )
-		ak = r_rPrev / Newz_zPrev;
-
-		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
-			x[i] = x[i] + ak * z[i];
-
-		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
-			r[i] = r[i] - ak * tmp1[i];
-
-		r_rCur = VectorScalarProduction(r); // ( rk , rk )
-		bk = r_rCur / r_rPrev;
-
-		for (int i = 0; i < n; i++) // zk =  rk + bk* z(k-1)
-			z[i] = r[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
-	}
-	SolveBackward(au, x, x);
-}
-
-void SLAE::MethodOfConjugateGradientsForNonSymMatrixWithDiagP()
-{
-	MatrixUVectorMultiplication(x0, x);
-
-	MatrixVectorMultiplication(x0, tmp1);
-	VectorSubtract(b, tmp1, tmp1);
-	SolveForward(al, tmp1, tmp1); //+
-	SolveBackward(al, tmp1, tmp1); //+
-	TransposedMatrixVectorMultiplication(tmp1, x0); //+
-	SolveForward(au, x0, tmp1); //+
-	VectorCopy(tmp1, r);
-	VectorCopy(r, z);
-	VectorConditionalityForNonSymMatrixDiagP(z, z);
-	
-	double r_rPrev, r_rCur, Newz_zPrev, ak, bk;
-	double normB = VectorNorm(b);
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-
-	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
-	{
-		printf("Iteration: %d ", curIt + 1);
-		VectorConditionalityForNonSymMatrixDiagP(r, tmp1);
-		r_rPrev = VectorScalarProduction(tmp1, r); // ( M^(-1)*r(k-1) , r(k-1) )
-		VectorCopy(z, tmp1); //Пока так, так как CalculateZ не очень удачно написан
-		CalculateZ(tmp1); //U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
-		Newz_zPrev = VectorScalarProduction(tmp1, z); //( A*z(k-1) , z(k-1) )
-		ak = r_rPrev / Newz_zPrev;
-
-		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
-			x[i] = x[i] + ak * z[i];
-
-		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
-			r[i] = r[i] - ak * tmp1[i];
-
-		VectorConditionalityForNonSymMatrixDiagP(r, tmp1);
-		r_rCur = VectorScalarProduction(tmp1, r); // ( M^(-1)*rk , rk )
-		bk = r_rCur / r_rPrev;
-
-		for (int i = 0; i < n; i++) // zk =  M^(-1)rk + bk* z(k-1)
-			z[i] = tmp1[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
-	}
-	SolveBackward(au, x, x);
-}
-
-void SLAE::MethodOfConjugateGradientsForNonSymMatrixWithLuP()
-{
-	MatrixUVectorMultiplication(x0, x);
-
-	MatrixVectorMultiplication(x0, tmp1);
-	VectorSubtract(b, tmp1, tmp1);
-	SolveForward(al, tmp1, tmp1);
-	SolveBackward(al, tmp1, tmp1);
-	TransposedMatrixVectorMultiplication(tmp1, x0);
-	SolveForward(au, x0, tmp1);
-	VectorCopy(tmp1, r);
-
-	// M = LU
-	// M^(-1) = U^(-1)*L^(-1)
-	SolveForwardLU(alLU, r, tmp1);
-	SolveBackwardLU(auLU, tmp1, tmp1);
-	VectorCopy(tmp1, z);
-	
-	double Mr_rPrev, Mr_rCur, Newz_zPrev, ak, bk;
-	double normB = VectorNorm(b);
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-
-	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
-	{
-		printf("Iteration: %d ", curIt + 1);
-		// M = LU
-		// M^(-1) = U^(-1)*L^(-1)
-		SolveForwardLU(alLU, r, tmp1);
-		SolveBackwardLU(auLU, tmp1, tmp1);
-		Mr_rPrev = VectorScalarProduction(tmp1, r); // ( M^(-1)*r(k-1) , r(k-1) )
-		VectorCopy(z, tmp1); //Пока так, так как CalculateZ не очень удачно написан
-		CalculateZ(tmp1); //U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
-		Newz_zPrev = VectorScalarProduction(tmp1, z); //( A*z(k-1) , z(k-1) )
-		ak = Mr_rPrev / Newz_zPrev;
-
-		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
-			x[i] = x[i] + ak * z[i];
-
-		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
-			r[i] = r[i] - ak * tmp1[i];
-
-		SolveForwardLU(alLU, r, tmp1);
-		SolveBackwardLU(auLU, tmp1, tmp1);
-		Mr_rCur = VectorScalarProduction(tmp1, r); // ( M^(-1)*rk , rk )
-		bk = Mr_rCur / Mr_rPrev;
-
-		for (int i = 0; i < n; i++) // zk =  M^(-1)*rk + bk*z(k-1)
-			z[i] = tmp1[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
-	}
-	SolveBackward(au, x, x);
-}
-
-//*********************** Несимметричная матрица с приведением AtA к симметричной матрице ***********************************************
+//*********************************************************************
 
 void SLAE::MethodOfConjugateGradientsForNonSymMatrixAtA()
 {
 	MatrixVectorMultiplication(x0, tmp1);
 	VectorSubtract(b, tmp1, tmp1);
-	TransposedMatrixVectorMultiplication(tmp1 , r);
+	TransposedMatrixVectorMultiplication(tmp1, r);
 	VectorCopy(r, z);
 
 	double normB = VectorNorm(b);
 	double ak = 0, bk = 0;
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+	double RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 
 	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
 	{
@@ -485,82 +340,37 @@ void SLAE::MethodOfConjugateGradientsForNonSymMatrixAtA()
 		double r_rCur = VectorScalarProduction(r); // ( rk , rk )
 		bk = r_rCur / r_rPrev;
 
-		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
+		for (int i = 0; i < n; i++) // zk = rk + bk* z(k-1)
 			z[i] = r[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+		RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
 	}
 }
+
 
 void SLAE::MethodOfConjugateGradientsForNonSymMatrixAtAWithDiagP()
 {
+	VectorCopy(x0, x);
 	MatrixVectorMultiplication(x0, tmp1);
 	VectorSubtract(b, tmp1, tmp1);
-	TransposedMatrixVectorMultiplication(tmp1, r);
-	VectorConditionalityForNonSymMatrixDiagP(tmp1, z);
+	VectorConditionalityForNonSymMatrixDiagP(tmp1, tmp1);
+	TransposedMatrixVectorMultiplication(tmp1, x0);
+	VectorCopy(x0, r);
+	VectorCopy(x0, z);
 
 	double normB = VectorNorm(b);
 	double ak = 0, bk = 0;
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+	double RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 
 	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
 	{
 		printf("Iteration: %d ", curIt + 1);
 
-		VectorConditionalityForNonSymMatrixDiagP(r, tmp1);
-		double Mr_rPrev = VectorScalarProduction(tmp1, r); // ( M*(-1)*r(k-1) , r(k-1) )
-
+		double r_rPrev = VectorScalarProduction(r); // ( r(k-1) , r(k-1) )
 		MatrixVectorMultiplication(z, x0); // A*z(k-1)
-		TransposedMatrixVectorMultiplication(x0, tmp1); // A^T*A*z(k-1)
-		double Az_zPrev = VectorScalarProduction(tmp1, z); //( A^T*A*z(k-1) , z(k-1) )
-
-		ak = Mr_rPrev / Az_zPrev;
-
-		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
-			x[i] = x[i] + ak * z[i];
-
-		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*A^T*A*z(k-1)
-			r[i] = r[i] - ak * tmp1[i];
-
-		VectorConditionalityForNonSymMatrixDiagP(r, tmp1);
-		double Mr_rCur = VectorScalarProduction(tmp1, r); // ( rk , rk )
-		bk = Mr_rCur / Mr_rPrev;
-
-		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
-			z[i] = tmp1[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
-	}
-}
-
-void SLAE::MethodOfConjugateGradientsForNonSymMatrixAtAWithLuP()
-{
-	MatrixVectorMultiplication(x0, tmp1);
-	VectorSubtract(b, tmp1, tmp1);
-	TransposedMatrixVectorMultiplication(tmp1, r);
-
-	// M = LU
-	// M^(-1) = U^(-1)*L^(-1)
-	SolveForwardLU(alLU, r, tmp1);
-	SolveBackwardLU(auLU, tmp1, tmp1);
-	VectorCopy(tmp1, z);
-
-	double normB = VectorNorm(b);
-	double ak = 0, bk = 0;
-	double RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
-
-	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
-	{
-		printf("Iteration: %d ", curIt + 1);
-
-		// M = LU
-		// M^(-1) = U^(-1)*L^(-1)
-		SolveForwardLU(alLU, r, tmp1);
-		SolveBackwardLU(auLU, tmp1, tmp1);
-		double r_rPrev = VectorScalarProduction(tmp1, r); // ( M^(-1)*r(k-1) , r(k-1) )
-		MatrixVectorMultiplication(z, x0); // A*z(k-1)
-		TransposedMatrixVectorMultiplication(x0, tmp1);
-		double Az_zPrev = VectorScalarProduction(tmp1, z); //( A*z(k-1) , z(k-1) )
+		VectorConditionalityForNonSymMatrixDiagP(x0, x0);
+		TransposedMatrixVectorMultiplication(x0, tmp1); // A^T*A*z(k - 1)
+		double Az_zPrev = VectorScalarProduction(tmp1, z); // ( A^T*A*z(k-1) , z(k-1) )
 		ak = r_rPrev / Az_zPrev;
 
 		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
@@ -569,18 +379,60 @@ void SLAE::MethodOfConjugateGradientsForNonSymMatrixAtAWithLuP()
 		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*A*z(k-1)
 			r[i] = r[i] - ak * tmp1[i];
 
-		// M = LU
-		// M^(-1) = U^(-1)*L^(-1)
-		SolveForwardLU(alLU, r, tmp1);
-		SolveBackwardLU(auLU, tmp1, tmp1);
-		double r_rCur = VectorScalarProduction(tmp1, r); // ( M^(-1)*rk , rk )
+		double r_rCur = VectorScalarProduction(r); // ( rk , rk )
 		bk = r_rCur / r_rPrev;
 
 		for (int i = 0; i < n; i++) // zk = M^(-1)*rk + bk* z(k-1)
-			z[i] = tmp1[i] + bk * z[i];
-		RelDiscrepancy = CalculateRelativeDiscrepancy(normB);
+			z[i] = r[i] + bk * z[i];
+		RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
 		printf("RelDiscrepancy: %.15lf\n", RelDiscrepancy);
 	}
+}
+
+void SLAE::MethodOfConjugateGradientsForNonSymMatrixAtAWithLuP()
+{
+	MatrixUVectorMultiplicationLU(auLU, x0, x);
+
+	MatrixVectorMultiplication(x0, tmp1);
+	VectorSubtract(b, tmp1, tmp1);
+	SolveForwardLU(alLU, diLU, tmp1, tmp1);
+	SolveBackwardLU(alLU, diLU, tmp1, tmp1);
+	TransposedMatrixVectorMultiplication(tmp1, x0);
+	SolveForwardLU(auLU, x0, tmp1);
+	VectorCopy(tmp1, r);
+	VectorCopy(tmp1, z);
+
+	double r_rPrev, r_rCur, Newz_zPrev, ak, bk;
+	double normB = VectorNorm(b);
+	double RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
+
+	for (int curIt = 0; curIt < maxiter and RelDiscrepancy > eps; curIt++)
+	{
+		r_rPrev = VectorScalarProduction(r); // ( r(k-1) , r(k-1) )
+		VectorCopy(z, tmp1);
+		CalculateZ(tmp1); // U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
+		Newz_zPrev = VectorScalarProduction(tmp1, z); //( A*z(k-1) , z(k-1) )
+		ak = r_rPrev / Newz_zPrev;
+
+		for (int i = 0; i < n; i++) // xk = x(k-1) + ak*z(k-1)
+			x[i] = x[i] + ak * z[i];
+
+		for (int i = 0; i < n; i++) // rk = r(k-1) - ak*U^(-T)*A^T*L^(-T)*L^(-1)*A*U^(-1)*z(k-1)
+			r[i] = r[i] - ak * tmp1[i];
+
+		r_rCur = VectorScalarProduction(r); // ( M^(-1)*rk , rk )
+		bk = r_rCur / r_rPrev;
+
+		for (int i = 0; i < n; i++) // zk =  M^(-1)*rk + bk*z(k-1)
+			z[i] = r[i] + bk * z[i];
+		RelDiscrepancy = CalculateRelativeDiscrepancyWithR(normB);
+		printf("Iteration: %d, RelDiscrepancy of r: %.15lf\n", curIt + 1, RelDiscrepancy);
+	}
+	SolveBackwardLU(auLU, x, x);
+	
+	printf("RelDiscrepancy of x: %.15lf\n", CalculateRelativeDiscrepancy(normB));
+	VectorSubtract(x, xtrue, tmp1);
+	printf("%.15lf", (fabs(VectorNorm(tmp1))/ VectorNorm(xtrue)));
 }
 
 //**********************************************************************
@@ -589,48 +441,41 @@ void SLAE::CalculateLU()
 {
 	for (int i = 0; i < n; i++) //i = 7
 	{
-		diLU[i] = di[i];
 		int i0 = ia[i]; //15
 		int i1 = ia[i + 1]; //19
 		double sumD = 0;
 
 		for (int k = i0; k < i1; k++)
 		{
-			alLU[k] = al[k];
-			auLU[k] = au[k];
-
 			double sumL = 0, sumU = 0;
 			int j = ja[k];
 
-			int j0 = ia[j]; 
-			int j1 = ia[j+1]; 
+			int j0 = ia[j];
+			int j1 = ia[j + 1];
 
 			int ik = i0;
-			int kj = ia[j];
+			int kj = j0;
 
-			int difI = k - i0; //4
-			int difJ = j1 - j0; //3
-			int difIJ = difI - difJ;
-			if (difIJ < 0)
-				kj += abs(difIJ);
-			else if(difIJ != 0)
-				ik += difIJ;
-
-			for ( ; ja[ik] < ja[k]; ik++, kj++)
+			for (; ik < i1 or kj < j0; )
 			{
+				if (ja[ik] < ja[kj])
+					ik++;
+				if (ja[ik] > ja[kj])
+					kj++;
 				if (ja[ik] == ja[kj]) {
 					sumL += alLU[ik] * auLU[kj];
 					sumU += alLU[kj] * auLU[ik];
-				}		
+					ik++; kj++;
+				}
+
 			}
-			alLU[k] = alLU[k] - sumL;
-			auLU[k] = (auLU[k] - sumU) / diLU[j];
+			alLU[k] = al[k] - sumL;
+			auLU[k] = (au[k] - sumU) / diLU[j];
 			sumD += alLU[k] * auLU[k];
 		}
-		diLU[i] -= sumD;
+		diLU[i] = di[i] - sumD;
 	}
 }
-
 //**********************************************************************
 
 void SLAE::GenerateHilbertMatrix(int size)
@@ -648,13 +493,13 @@ void SLAE::GenerateHilbertMatrix(int size)
 	{
 		ia[i] = ia[i - 1] + (i - 1);
 
-			
+
 		di[i - 1] = (double)1 / (2 * i - 1);
 		for (int j = 1; j < i; j++, k++)
 		{
 			al[k] = (double)1 / (i + j - 1);
 			au[k] = (double)1 / (i + j - 1);
-			ja[k] = j-1;
+			ja[k] = j - 1;
 		}
 	}
 
@@ -673,11 +518,11 @@ void SLAE::GenerateHilbertMatrix(int size)
 //**********************************************************************
 
 
-void SLAE::VectorConditionalityForSymMatrixDiagP(double *vectorIn, double *vectorOut)
+void SLAE::VectorConditionalityForSymMatrixDiagP(double* vectorIn, double* vectorOut)
 {
 	for (int i = 0; i < n; i++)
 	{
-		vectorOut[i] = vectorIn[i]/ di[i];
+		vectorOut[i] = vectorIn[i] / di[i];
 	}
 }
 
@@ -735,7 +580,7 @@ double SLAE::VectorNorm(double* vector)
 	return sqrt(norm);
 }
 
-void SLAE::VectorZeroing(double *vector)
+void SLAE::VectorZeroing(double* vector)
 {
 	for (int i = 0; i < n; i++)
 	{
@@ -743,7 +588,7 @@ void SLAE::VectorZeroing(double *vector)
 	}
 }
 
-void SLAE::VectorOutputSolution(FILE *out)
+void SLAE::VectorOutputSolution(FILE* out)
 {
 	for (int i = 0; i < n; i++)
 	{
@@ -754,7 +599,7 @@ void SLAE::VectorOutputSolution(FILE *out)
 }
 
 
-void SLAE::SolveForward(double* lowerTringMat, double* rightVector, double* vectorX) {
+void SLAE::SolveForward(double* lowerTringMat, double* diag, double* rightVector, double* vectorX) {
 	for (int i0, i1, i = 0; i < n; i++)
 	{
 		double sum = 0;
@@ -766,21 +611,37 @@ void SLAE::SolveForward(double* lowerTringMat, double* rightVector, double* vect
 			int j = ja[k];
 			sum += lowerTringMat[k] * vectorX[j];
 		}
-		vectorX[i] = (rightVector[i] - sum) / di[i];
+		vectorX[i] = (rightVector[i] - sum) / diag[i];
 	}
 }
 
-void SLAE::SolveBackward(double* upperTringMat, double* rightVector, double* vectorX) {
+void SLAE::SolveBackward(double* upperTringMat, double* diag, double* rightVector, double* vectorX) {
 	for (int i0, i1, i = n - 1; i >= 0; i--)
 	{
 		i0 = ia[i];
 		i1 = ia[i + 1];
-		vectorX[i] = rightVector[i] / di[i];
+		vectorX[i] = rightVector[i] / diag[i];
 		for (int j, k = i0; k < i1; k++)
 		{
 			j = ja[k];
 			rightVector[j] -= upperTringMat[k] * vectorX[i];
 		}
+	}
+}
+
+void SLAE::SolveForwardLU(double* lowerTringMat,double *diag, double* rightVector, double* vectorX) {
+	for (int i0, i1, i = 0; i < n; i++)
+	{
+		double sum = 0;
+		i0 = ia[i];
+		i1 = ia[i + 1];
+		//int j = i - (i1 - i0);
+		for (int k = i0; k < i1; k++)
+		{
+			int j = ja[k];
+			sum += lowerTringMat[k] * vectorX[j];
+		}
+		vectorX[i] = (rightVector[i] - sum) / diag[i];
 	}
 }
 
@@ -796,7 +657,21 @@ void SLAE::SolveForwardLU(double* lowerTringMat, double* rightVector, double* ve
 			int j = ja[k];
 			sum += lowerTringMat[k] * vectorX[j];
 		}
-		vectorX[i] = (rightVector[i] - sum) / diLU[i];
+		vectorX[i] = (rightVector[i] - sum);
+	}
+}
+
+void SLAE::SolveBackwardLU(double* upperTringMat, double* diag, double* rightVector, double* vectorX) {
+	for (int i0, i1, i = n - 1; i >= 0; i--)
+	{
+		i0 = ia[i];
+		i1 = ia[i + 1];
+		vectorX[i] = rightVector[i] / diag[i];
+		for (int j, k = i0; k < i1; k++)
+		{
+			j = ja[k];
+			rightVector[j] -= upperTringMat[k] * vectorX[i];
+		}
 	}
 }
 
@@ -815,35 +690,43 @@ void SLAE::SolveBackwardLU(double* upperTringMat, double* rightVector, double* v
 }
 
 
-void SLAE::MatrixUVectorMultiplication(double* vectorMult, double* vectorOut)
+void SLAE::MatrixUVectorMultiplicationLU(double* upperTringMat, double* vectorMult, double* vectorOut)
 {
 	for (int i = 0; i < n; i++)
 	{
-		vectorOut[i] = vectorMult[i] * di[i];
+		vectorOut[i] = vectorMult[i];
 		for (int j, k = ia[i]; k < ia[i + 1]; k++)
 		{
 			j = ja[k];
-			vectorOut[j] += au[k] * vectorMult[i];
+			vectorOut[j] += upperTringMat[k] * vectorMult[i];
 		}
 	}
 }
 
 void SLAE::CalculateZ(double* vectorOut)
 {
-	SolveBackward(au, tmp1, tmp1);
+	SolveBackwardLU(auLU, tmp1, tmp1);
 	MatrixVectorMultiplication(tmp1, x0);
-	SolveForward(al, x0, tmp1);
-	SolveBackward(al, tmp1, tmp1);
+	SolveForwardLU(alLU, diLU, x0, tmp1);
+	SolveBackwardLU(alLU, diLU, tmp1, tmp1);
 	TransposedMatrixVectorMultiplication(tmp1, x0);
-	SolveForward(au, x0, vectorOut);
+	SolveForwardLU(auLU, x0, vectorOut);
 }
 
-double SLAE::CalculateRelativeDiscrepancy(double norm)
+double SLAE::CalculateRelativeDiscrepancyWithR(double norm)
 {
 	return VectorNorm(r) / norm;
 }
 
-void SLAE::AllocateMemory() 
+double SLAE::CalculateRelativeDiscrepancy(double norm)
+{
+
+	MatrixVectorMultiplication(x, tmp1);
+	VectorSubtract(b, tmp1, tmp1);
+	return VectorNorm(tmp1) / norm;
+}
+
+void SLAE::AllocateMemory()
 {
 	al = new double[nProfile]();
 	au = new double[nProfile]();
@@ -856,6 +739,8 @@ void SLAE::AllocateMemory()
 	z = new double[n]();
 	tmp1 = new double[n]();
 
+	xtrue = new double[n]();
+
 	alLU = new double[nProfile]();
 	auLU = new double[nProfile]();
 	diLU = new double[n]();
@@ -863,7 +748,7 @@ void SLAE::AllocateMemory()
 
 void SLAE::ClearMemory()
 {
-	delete [] al;
+	delete[] al;
 	delete[] au;
 	delete[] di;
 	delete[] ja;
