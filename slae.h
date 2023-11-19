@@ -23,21 +23,22 @@ public:
 	double CalculateRelativeDiscrepancy(double norm);
 
 	void MethodOfConjugateGradientsForSymMatrix();
-	void MethodOfConjugateGradientsForNonSymMatrixAtA();
-	//void MethodOfConjugateGradientsForNonSymMatrix();
+	void MethodOfConjugateGradientsForNonSymMatrix();
 
 	void MethodOfConjugateGradientsForSymMatrixWithDiagP();
-	//void MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
-	void MethodOfConjugateGradientsForNonSymMatrixAtAWithDiagP();
+	void MethodOfConjugateGradientsForNonSymMatrixWithDiagP();
 
 	void MethodOfConjugateGradientsForSymMatrixWithLuP();
-	//void MethodOfConjugateGradientsForNonSymMatrixWithLuP();
-	void MethodOfConjugateGradientsForNonSymMatrixAtAWithLuP();
+	void MethodOfConjugateGradientsForNonSymMatrixWithLuP();
+	void MethodOfConjugateGradientsForNonSymMatrixWithLuAsterP();
+	void MethodOfConjugateGradientsForNonSymMatrixWithLuSqP();
 
 	void VectorConditionalityForSymMatrixDiagP(double* vectorIn, double* vectorOut);
 	void VectorConditionalityForNonSymMatrixDiagP(double* vectorIn, double* vectorOut);
 
 	void CalculateLU();
+	void CalculateLUaster();
+	void CalculateLUsq();
 
 	void GenerateHilbertMatrix(int size);
 
@@ -51,7 +52,9 @@ public:
 	void SolveBackwardLU(double* upperTringMat, double* diag, double* rightVector, double* vectorX);
 
 	void MatrixUVectorMultiplicationLU(double* U, double* vectorMult, double* vectorOut);
-	void CalculateZ(double* vectorOut);
+	void CalculateZ_LU(double* vectorOut);
+	void CalculateZ_LUaster(double* vectorOut);
+	void CalculateZ_LUsq(double* vectorOut);
 
 	void CalculateFsubAx(double* vectorMult, double* vectorOut);
 	void VectorSubtract(double* first, double* second, double* result);
