@@ -49,5 +49,11 @@
     <Text Include="di8.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="param12.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="param4545.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>

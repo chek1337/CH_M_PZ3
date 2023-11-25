@@ -11,7 +11,7 @@ public:
 	double  eps = 1e-13;
 	double* al, * au, * di;
 	double* alLU, * auLU, * diLU;
-	double* x, * x0, * b, * xtrue;
+	double* x, * x0, * b, * xtrue, * dP;
 	double* r, * z, * tmp1;
 	int* ia, * ja;
 
@@ -52,11 +52,16 @@ public:
 	void SolveBackwardLU(double* upperTringMat, double* diag, double* rightVector, double* vectorX);
 
 	void MatrixUVectorMultiplicationLU(double* U, double* vectorMult, double* vectorOut);
+	void MatrixUVectorMultiplicationLU(double* U, double *diag, double* vectorMult, double* vectorOut);
 	void CalculateZ_LU(double* vectorOut);
 	void CalculateZ_LUaster(double* vectorOut);
 	void CalculateZ_LUsq(double* vectorOut);
 
-	void CalculateFsubAx(double* vectorMult, double* vectorOut);
+	void CalculateXkRk(double ak);
+	void CalculateZk(double bk);
+	void Calculate_dP();
+
+	void CalculateRelativeDiscrepancy(double* vectorMult, double* vectorOut);
 	void VectorSubtract(double* first, double* second, double* result);
 	double VectorScalarProduction(double* vector);
 	double VectorScalarProduction(double* vector1, double* vector2);

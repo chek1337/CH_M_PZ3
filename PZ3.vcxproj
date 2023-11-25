@@ -140,6 +140,8 @@
     <Text Include="di8.txt" />
     <Text Include="ia8.txt" />
     <Text Include="ja8.txt" />
+    <Text Include="param12.txt" />
+    <Text Include="param4545.txt" />
     <Text Include="param8.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
