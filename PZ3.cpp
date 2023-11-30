@@ -168,13 +168,13 @@ int main()
         slae.VectorOutputSolution(out);
         break;
     case 8:
-        fopen_s(&paramf, "param945.txt", "r");
-        fopen_s(&iaf, "ia945.txt", "r");
-        fopen_s(&jaf, "ja945.txt", "r");
-        fopen_s(&alf, "al945.txt", "r");
-        fopen_s(&auf, "au945.txt", "r");
-        fopen_s(&dif, "di945.txt", "r");
-        fopen_s(&bf, "b945.txt", "r");
+        fopen_s(&paramf, "param4545.txt", "r");
+        fopen_s(&iaf, "ia4545.txt", "r");
+        fopen_s(&jaf, "ja4545.txt", "r");
+        fopen_s(&alf, "al4545.txt", "r");
+        fopen_s(&auf, "au4545.txt", "r");
+        fopen_s(&dif, "di4545.txt", "r");
+        fopen_s(&bf, "b4545.txt", "r");
         slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
         //slae.OutputDense();
         slae.CalculateLUsq();
@@ -215,7 +215,7 @@ int main()
         break;
     case 11:
 
-        slae.GenerateHilbertMatrix(12);
+        slae.GenerateHilbertMatrix(20);
         //slae.OutputDense();
         //slae.OutputLUDense();
 
@@ -245,7 +245,7 @@ int main()
         break;
     case 13:
 
-        slae.GenerateHilbertMatrix(10);
+        slae.GenerateHilbertMatrix(12);
         //slae.OutputDense();
         //slae.OutputLUDense();
         slae.CalculateLUsq();
