@@ -567,7 +567,7 @@ void SLAE::CalculateLU()
 			int ik = i0;
 			int kj = j0;
 
-			for (; ik < i1 or kj < j0; )
+			for (; ik < k and kj < j1; )
 			{
 				if (ja[ik] < ja[kj])
 					ik++;
@@ -607,7 +607,7 @@ void SLAE::CalculateLUaster()
 			int ik = i0;
 			int kj = j0;
 
-			for (; ik < i1 or kj < j0; )
+			for (; ik < k and kj < j1; )
 			{
 				if (ja[ik] < ja[kj])
 					ik++;
@@ -647,7 +647,7 @@ void SLAE::CalculateLUsq()
 			int ik = i0;
 			int kj = j0;
 
-			for (; ik < i1 or kj < j0; )
+			for (; ik < k and kj < j1; )
 			{
 				if (ja[ik] < ja[kj])
 					ik++;

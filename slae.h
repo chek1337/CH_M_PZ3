@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <math.h>
 
-#define REALOUTD "%.7f\t"
+#define REALOUTD "%.15f\t"
 
 class SLAE {
 public:
