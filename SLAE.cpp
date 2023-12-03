@@ -350,10 +350,7 @@ void SLAE::MethodOfConjugateGradientsForNonSymMatrixWithDiagP()
 
 	VectorCopy(x0, x);
 
-	for (int i = 0; i < n; i++)
-	{
-		x[i] = x[i] * dP[i];
-	}
+	VectorUVectorMultiplication(x);
 
 	CalculateRelativeDiscrepancy(x0, tmp1);
 
@@ -531,7 +528,13 @@ void SLAE::MethodOfConjugateGradientsForNonSymMatrixWithLuSqP()
 //**********************************************************************
 
 
-
+void SLAE::VectorUVectorMultiplication(double *x)
+{
+	for (int i = 0; i < n; i++)
+	{
+		x[i] = x[i] * dP[i];
+	}
+}
 
 void SLAE::CalculateXkRk(double ak)
 {

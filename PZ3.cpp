@@ -92,13 +92,13 @@ int main()
         slae.VectorOutputSolution(out);
         break;
     case 4:
-        fopen_s(&paramf, "param945.txt", "r");
-        fopen_s(&iaf, "ia945.txt", "r");
-        fopen_s(&jaf, "ja945.txt", "r");
-        fopen_s(&alf, "al945.txt", "r");
-        fopen_s(&auf, "au945.txt", "r");
-        fopen_s(&dif, "di945.txt", "r");
-        fopen_s(&bf, "b945.txt", "r");
+        fopen_s(&paramf, "param12.txt", "r");
+        fopen_s(&iaf, "ia12.txt", "r");
+        fopen_s(&jaf, "ja12.txt", "r");
+        fopen_s(&alf, "al12+.txt", "r");
+        fopen_s(&auf, "au12+.txt", "r");
+        fopen_s(&dif, "di12.txt", "r");
+        fopen_s(&bf, "b12+.txt", "r");
         slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
        //slae.OutputDense();
 
@@ -110,13 +110,13 @@ int main()
         slae.VectorOutputSolution(out);
         break;
     case 5:
-        fopen_s(&paramf, "param945.txt", "r");
-        fopen_s(&iaf, "ia945.txt", "r");
-        fopen_s(&jaf, "ja945.txt", "r");
-        fopen_s(&alf, "al945.txt", "r");
-        fopen_s(&auf, "au945.txt", "r");
-        fopen_s(&dif, "di945.txt", "r");
-        fopen_s(&bf, "b945.txt", "r");
+        fopen_s(&paramf, "param12.txt", "r");
+        fopen_s(&iaf, "ia12.txt", "r");
+        fopen_s(&jaf, "ja12.txt", "r");
+        fopen_s(&alf, "al12+.txt", "r");
+        fopen_s(&auf, "au12+.txt", "r");
+        fopen_s(&dif, "di12.txt", "r");
+        fopen_s(&bf, "b12+.txt", "r");
         slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
         //slae.OutputDense();
 
@@ -128,17 +128,17 @@ int main()
         slae.VectorOutputSolution(out);
         break;
     case 6:
-        fopen_s(&paramf, "param6.txt", "r");
-        fopen_s(&iaf, "ia6.txt", "r");
-        fopen_s(&jaf, "ja6.txt", "r");
-        fopen_s(&alf, "al6.txt", "r");
-        fopen_s(&auf, "au6.txt", "r");
-        fopen_s(&dif, "di6.txt", "r");
-        fopen_s(&bf, "b6.txt", "r");
+        fopen_s(&paramf, "param12.txt", "r");
+        fopen_s(&iaf, "ia12.txt", "r");
+        fopen_s(&jaf, "ja12.txt", "r");
+        fopen_s(&alf, "al12+.txt", "r");
+        fopen_s(&auf, "au12+.txt", "r");
+        fopen_s(&dif, "di12.txt", "r");
+        fopen_s(&bf, "b12+.txt", "r");
         slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
         //slae.OutputDense();
         slae.CalculateLU();
-        slae.OutputLUDense();
+        //slae.OutputLUDense();
 
         start_time = steady_clock::now();
         slae.MethodOfConjugateGradientsForNonSymMatrixWithLuP();
@@ -148,17 +148,17 @@ int main()
         slae.VectorOutputSolution(out);
         break;
     case 7:
-        fopen_s(&paramf, "param6.txt", "r");
-        fopen_s(&iaf, "ia6.txt", "r");
-        fopen_s(&jaf, "ja6.txt", "r");
-        fopen_s(&alf, "al6.txt", "r");
-        fopen_s(&auf, "au6.txt", "r");
-        fopen_s(&dif, "di6.txt", "r");
-        fopen_s(&bf, "b6.txt", "r");
+        fopen_s(&paramf, "param12.txt", "r");
+        fopen_s(&iaf, "ia12.txt", "r");
+        fopen_s(&jaf, "ja12.txt", "r");
+        fopen_s(&alf, "al12+.txt", "r");
+        fopen_s(&auf, "au12+.txt", "r");
+        fopen_s(&dif, "di12.txt", "r");
+        fopen_s(&bf, "b12+.txt", "r");
         slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
-        slae.OutputDense();
+        //slae.OutputDense();
         slae.CalculateLUaster();
-        slae.OutputLUDense();
+        //slae.OutputLUDense();
 
         start_time = steady_clock::now();
         slae.MethodOfConjugateGradientsForNonSymMatrixWithLuAsterP();
@@ -168,13 +168,13 @@ int main()
         slae.VectorOutputSolution(out);
         break;
     case 8:
-        fopen_s(&paramf, "param4545.txt", "r");
-        fopen_s(&iaf, "ia4545.txt", "r");
-        fopen_s(&jaf, "ja4545.txt", "r");
-        fopen_s(&alf, "al4545.txt", "r");
-        fopen_s(&auf, "au4545.txt", "r");
-        fopen_s(&dif, "di4545.txt", "r");
-        fopen_s(&bf, "b4545.txt", "r");
+        fopen_s(&paramf, "param12.txt", "r");
+        fopen_s(&iaf, "ia12.txt", "r");
+        fopen_s(&jaf, "ja12.txt", "r");
+        fopen_s(&alf, "al12+.txt", "r");
+        fopen_s(&auf, "au12+.txt", "r");
+        fopen_s(&dif, "di12.txt", "r");
+        fopen_s(&bf, "b12+.txt", "r");
         slae.Input(paramf, iaf, jaf, alf, auf, dif, bf);
         //slae.OutputDense();
         slae.CalculateLUsq();
@@ -190,7 +190,7 @@ int main()
 
     case 9:
 
-        slae.GenerateHilbertMatrix(50);
+        slae.GenerateHilbertMatrix(10);
         //slae.OutputDense();
         //slae.OutputLUDense();
         start_time = steady_clock::now();
@@ -215,7 +215,7 @@ int main()
         break;
     case 11:
 
-        slae.GenerateHilbertMatrix(20);
+        slae.GenerateHilbertMatrix(8);
         //slae.OutputDense();
         //slae.OutputLUDense();
 
@@ -232,8 +232,7 @@ int main()
 
         slae.GenerateHilbertMatrix(8);
         slae.OutputDense();
-        
-
+       
         slae.CalculateLUaster();
         slae.OutputLUDense();
         start_time = steady_clock::now();
@@ -245,7 +244,7 @@ int main()
         break;
     case 13:
 
-        slae.GenerateHilbertMatrix(12);
+        slae.GenerateHilbertMatrix(13);
         //slae.OutputDense();
         //slae.OutputLUDense();
         slae.CalculateLUsq();

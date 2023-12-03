@@ -53,6 +53,7 @@ public:
 
 	void MatrixUVectorMultiplicationLU(double* U, double* vectorMult, double* vectorOut);
 	void MatrixUVectorMultiplicationLU(double* U, double *diag, double* vectorMult, double* vectorOut);
+	void VectorUVectorMultiplication(double* x);
 	void CalculateZ_LU(double* vectorOut);
 	void CalculateZ_LUaster(double* vectorOut);
 	void CalculateZ_LUsq(double* vectorOut);
